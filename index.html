@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delta Studio — Desarrollo Web & IA | Santo Domingo</title>
+  <meta name="description" content="Agencia de desarrollo web e inteligencia artificial en Santo Domingo. Tu negocio en línea en 7 días." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #070E1C;
+      --bg2:       #0C1829;
+      --bg3:       #111F38;
+      --navy:      #1B3A6B;
+      --teal:      #2EC4B6;
+      --teal-dim:  rgba(46,196,182,.15);
+      --teal-glow: rgba(46,196,182,.35);
+      --silver:    #8892A4;
+      --white:     #EDF2FF;
+      --border:    rgba(46,196,182,.18);
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: .4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 6%;
+      background: rgba(7,14,28,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: .75rem;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 52px; width: auto;
+      filter: drop-shadow(0 0 10px rgba(46,196,182,.45)) brightness(1.25);
+    }
+    .nav-logo-text { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; color: var(--white); letter-spacing: -.01em; }
+    .nav-logo-text span { color: var(--teal); }
+
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; font-size: .85rem; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--silver);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+
+    .nav-cta {
+      background: var(--teal); color: var(--bg);
+      padding: .55rem 1.4rem; border-radius: 4px;
+      font-family: var(--font-head); font-weight: 700; font-size: .82rem;
+      letter-spacing: .05em; text-transform: uppercase;
+      text-decoration: none;
+      transition: box-shadow .25s, transform .2s;
+    }
+    .nav-cta:hover { box-shadow: 0 0 28px var(--teal-glow); transform: translateY(-1px); }
+
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: .3s; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 10rem 6% 6rem;
+      overflow: hidden;
+    }
+
+    /* ghost delta watermark */
+    #hero::before {
+      content: 'Δ';
+      position: absolute; right: -4%; top: 50%; transform: translateY(-50%);
+      font-family: var(--font-head); font-size: clamp(22rem, 38vw, 52rem);
+      font-weight: 800; line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(46,196,182,.07);
+      pointer-events: none; user-select: none;
+      animation: pulse-delta 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse-delta {
+      0%, 100% { opacity: .6; transform: translateY(-50%) scale(1); }
+      50%       { opacity: 1;  transform: translateY(-50%) scale(1.02); }
+    }
+
+    /* floating particles */
+    .particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle {
+      position: absolute;
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 14px solid var(--teal);
+      opacity: 0;
+      animation: float-particle linear infinite;
+    }
+    @keyframes float-particle {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10%  { opacity: .5; }
+      90%  { opacity: .2; }
+      100% { opacity: 0; transform: translateY(-80vh) rotate(360deg); }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: .75rem;
+      font-size: .75rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 2rem;
+      animation: fade-up .8s .1s both;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 32px; height: 1px; background: var(--teal);
+    }
+
+    h1 {
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 800; line-height: 1.0;
+      letter-spacing: -.03em;
+      animation: fade-up .8s .2s both;
+    }
+    h1 em { font-style: normal; color: var(--teal); }
+    h1 .outline {
+      -webkit-text-stroke: 1.5px var(--white);
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 1.75rem;
+      font-size: 1.1rem; color: var(--silver);
+      max-width: 520px; line-height: 1.8;
+      animation: fade-up .8s .35s both;
+    }
+
+    .hero-actions {
+      margin-top: 2.75rem;
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      animation: fade-up .8s .5s both;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--teal); color: var(--bg);
+      padding: .9rem 2rem; border-radius: 4px;
+      font-family: var(--font-head); font-weight: 700; font-size: .9rem;
+      letter-spacing: .04em; text-decoration: none; text-transform: uppercase;
+      transition: box-shadow .25s, transform .2s;
+    }
+    .btn-primary:hover { box-shadow: 0 0 36px var(--teal-glow); transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .6rem;
+      border: 1px solid var(--border); color: var(--white);
+      padding: .9rem 2rem; border-radius: 4px;
+      font-family: var(--font-head); font-weight: 600; font-size: .9rem;
+      letter-spacing: .04em; text-decoration: none; text-transform: uppercase;
+      transition: border-color .25s, color .25s;
+    }
+    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+    .hero-stats {
+      display: flex; flex-wrap: wrap; gap: 2.5rem;
+      margin-top: 4rem; padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      animation: fade-up .8s .65s both;
+    }
+    .stat-num {
+      font-family: var(--font-head); font-size: 2.2rem; font-weight: 800;
+      color: var(--teal); display: block; line-height: 1;
+    }
+    .stat-label { font-size: .78rem; color: var(--silver); letter-spacing: .1em; text-transform: uppercase; margin-top: .3rem; }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; padding: 7rem 6%; }
+    .section-eyebrow {
+      font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--teal); display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--teal); }
+
+    h2 {
+      font-family: var(--font-head); font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 800; line-height: 1.05; letter-spacing: -.025em;
+    }
+    h2 em { font-style: normal; color: var(--teal); }
+
+    /* ── SERVICES ── */
+    #servicios { background: var(--bg2); }
+    #servicios .section-head { max-width: 560px; margin-bottom: 4rem; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .service-card {
+      background: var(--bg2);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+    }
+    .service-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--teal-dim), transparent);
+      opacity: 0; transition: opacity .35s;
+    }
+    .service-card:hover { background: var(--bg3); }
+    .service-card:hover::after { opacity: 1; }
+
+    .service-icon {
+      width: 48px; height: 48px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+      position: relative; z-index: 1;
+      transition: border-color .3s;
+    }
+    .service-card:hover .service-icon { border-color: var(--teal); }
+
+    .service-title {
+      font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
+      margin-bottom: .75rem; position: relative; z-index: 1;
+    }
+    .service-desc { font-size: .88rem; color: var(--silver); line-height: 1.7; position: relative; z-index: 1; }
+
+    .service-num {
+      position: absolute; top: 1.5rem; right: 1.75rem;
+      font-family: var(--font-head); font-size: 3.5rem; font-weight: 800;
+      color: rgba(46,196,182,.06); line-height: 1; pointer-events: none;
+    }
+
+    /* ── WHY DELTA ── */
+    #por-que {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .why-text h2 { margin-bottom: 1.5rem; }
+    .why-text p { color: var(--silver); margin-bottom: 2rem; font-size: .95rem; }
+
+    .why-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .why-list li {
+      display: flex; align-items: flex-start; gap: 1rem;
+      font-size: .9rem; color: var(--silver);
+    }
+    .why-list li::before {
+      content: '▲';
+      color: var(--teal); font-size: .6rem; margin-top: .45rem; flex-shrink: 0;
+    }
+    .why-list strong { color: var(--white); display: block; font-family: var(--font-head); font-size: .95rem; font-weight: 600; margin-bottom: .1rem; }
+
+    .why-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .delta-3d {
+      width: 280px; height: 280px;
+      position: relative;
+    }
+    .delta-ring {
+      position: absolute; inset: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      animation: spin-ring linear infinite;
+    }
+    .delta-ring:nth-child(1) { animation-duration: 18s; }
+    .delta-ring:nth-child(2) { inset: 20px; animation-duration: 12s; animation-direction: reverse; border-color: rgba(46,196,182,.3); }
+    .delta-ring:nth-child(3) { inset: 40px; animation-duration: 24s; }
+    @keyframes spin-ring { to { transform: rotate(360deg); } }
+
+    .delta-center {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-head); font-size: 7rem; font-weight: 800;
+      color: transparent; -webkit-text-stroke: 2px var(--teal);
+      filter: drop-shadow(0 0 20px var(--teal-glow));
+    }
+
+    .why-cards {
+      position: absolute; inset: 0;
+    }
+    .why-badge {
+      position: absolute;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: .75rem 1.25rem;
+      font-family: var(--font-head); font-size: .85rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .why-badge:nth-child(1) { top: 10%; left: -10%; }
+    .why-badge:nth-child(2) { bottom: 15%; right: -8%; color: var(--teal); border-color: var(--teal-glow); }
+    .why-badge:nth-child(3) { bottom: 35%; left: -15%; color: var(--silver); font-size: .75rem; }
+
+    /* ── PORTFOLIO ── */
+    #portafolio { background: var(--bg2); }
+    #portafolio .section-head { max-width: 560px; margin-bottom: 4rem; }
+
+    .portfolio-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0;
+      transition: box-shadow .3s;
+    }
+    .portfolio-card:hover { box-shadow: 0 0 60px rgba(46,196,182,.12); }
+
+    .portfolio-preview {
+      background: linear-gradient(135deg, #0A1628 0%, #1B3A6B 100%);
+      padding: 2.5rem 2.5rem 0;
+      position: relative; overflow: hidden;
+      min-height: 320px;
+    }
+    .portfolio-preview::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(46,196,182,.15), transparent 60%);
+    }
+    .browser-bar {
+      background: var(--bg2); border-radius: 8px 8px 0 0;
+      padding: .6rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+      position: relative; z-index: 1;
+    }
+    .browser-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .browser-dot:nth-child(1) { background: #FF5F56; }
+    .browser-dot:nth-child(2) { background: #FFBD2E; }
+    .browser-dot:nth-child(3) { background: #27C93F; }
+    .browser-url {
+      flex: 1; margin-left: .75rem;
+      background: var(--bg3); border-radius: 4px;
+      padding: .2rem .75rem; font-size: .7rem; color: var(--silver);
+    }
+    .browser-content {
+      background: #f8faff;
+      height: 220px; border-radius: 0 0 4px 4px;
+      position: relative; z-index: 1; overflow: hidden;
+    }
+    .bc-nav { background: white; height: 40px; display: flex; align-items: center; padding: 0 1rem; gap: 1rem; border-bottom: 1px solid #eee; }
+    .bc-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: #CBD5E1; }
+    .bc-hero { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); height: 110px; margin: .5rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .bc-hero-text { font-family: var(--font-head); font-size: .7rem; color: #1B3A6B; font-weight: 700; }
+    .bc-cards { display: flex; gap: .5rem; padding: .5rem; }
+    .bc-card { flex: 1; height: 40px; background: white; border-radius: 4px; border: 1px solid #E2E8F0; }
+
+    .portfolio-info { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .portfolio-tag {
+      display: inline-block; background: var(--teal-dim); color: var(--teal);
+      border: 1px solid rgba(46,196,182,.3); border-radius: 4px;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      padding: .3rem .75rem; margin-bottom: 1.5rem; width: fit-content;
+    }
+    .portfolio-title {
+      font-family: var(--font-head); font-size: 1.7rem; font-weight: 800;
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+    .portfolio-desc { font-size: .88rem; color: var(--silver); line-height: 1.8; margin-bottom: 2rem; }
+    .portfolio-results { display: flex; gap: 2rem; margin-bottom: 2rem; }
+    .p-result-num { font-family: var(--font-head); font-size: 1.6rem; font-weight: 800; color: var(--teal); display: block; }
+    .p-result-label { font-size: .72rem; color: var(--silver); text-transform: uppercase; letter-spacing: .1em; }
+    .portfolio-tech { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .tech-tag {
+      font-size: .72rem; padding: .25rem .65rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+      color: var(--silver);
+    }
+
+    /* ── PRICING ── */
+    #precios .section-head { max-width: 560px; margin-bottom: 4rem; }
+    #precios .section-head p { color: var(--silver); margin-top: 1rem; font-size: .95rem; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 860px;
+    }
+
+    .pricing-card {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 2.5rem;
+      position: relative; overflow: hidden;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .pricing-card.featured {
+      border-color: var(--teal);
+      box-shadow: 0 0 40px rgba(46,196,182,.15);
+    }
+    .pricing-card.featured::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--teal), #4EEEE8);
+    }
+    .pricing-card:not(.featured):hover { border-color: rgba(46,196,182,.4); }
+
+    .pricing-badge {
+      display: inline-block; background: var(--teal); color: var(--bg);
+      font-family: var(--font-head); font-size: .7rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .3rem .8rem; border-radius: 3px; margin-bottom: 1.5rem;
+    }
+
+    .pricing-plan { font-family: var(--font-head); font-size: 1rem; font-weight: 600; color: var(--silver); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .75rem; }
+    .pricing-price { font-family: var(--font-head); font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: .3rem; }
+    .pricing-price span { font-size: 1rem; color: var(--silver); font-weight: 400; }
+    .pricing-setup { font-size: .82rem; color: var(--silver); margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: .9rem; margin-bottom: 2rem; }
+    .pricing-features li { display: flex; align-items: flex-start; gap: .75rem; font-size: .88rem; color: var(--silver); }
+    .pricing-features li::before { content: '▲'; color: var(--teal); font-size: .55rem; margin-top: .45rem; flex-shrink: 0; }
+
+    .btn-pricing {
+      display: block; width: 100%; text-align: center;
+      padding: .9rem; border-radius: 6px;
+      font-family: var(--font-head); font-weight: 700; font-size: .88rem;
+      letter-spacing: .05em; text-transform: uppercase; text-decoration: none;
+      transition: .25s;
+    }
+    .btn-pricing.primary { background: var(--teal); color: var(--bg); }
+    .btn-pricing.primary:hover { box-shadow: 0 0 28px var(--teal-glow); }
+    .btn-pricing.outline { border: 1.5px solid var(--border); color: var(--white); }
+    .btn-pricing.outline:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* ── CONTACT ── */
+    #contacto { background: var(--bg2); }
+    .contact-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+    }
+
+    .contact-info h2 { margin-bottom: 1rem; }
+    .contact-info p { color: var(--silver); font-size: .95rem; margin-bottom: 2.5rem; }
+
+    .contact-items { display: flex; flex-direction: column; gap: 1.25rem; }
+    .contact-item { display: flex; align-items: center; gap: 1rem; }
+    .contact-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .contact-item-text { font-size: .9rem; }
+    .contact-item-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--silver); }
+    .contact-item-value { color: var(--white); font-weight: 500; }
+
+    .wa-block {
+      margin-top: 2.5rem;
+      background: linear-gradient(135deg, #1A2D1A, #0F200F);
+      border: 1px solid rgba(37,211,102,.25);
+      border-radius: 12px; padding: 2rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .wa-text strong { display: block; font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: #25D366; margin-bottom: .25rem; }
+    .wa-text span { font-size: .83rem; color: var(--silver); }
+    .wa-btn {
+      background: #25D366; color: #0a1628;
+      padding: .75rem 1.5rem; border-radius: 6px;
+      font-family: var(--font-head); font-weight: 700; font-size: .82rem;
+      letter-spacing: .05em; text-transform: uppercase; text-decoration: none;
+      white-space: nowrap; transition: box-shadow .25s;
+      flex-shrink: 0;
+    }
+    .wa-btn:hover { box-shadow: 0 0 24px rgba(37,211,102,.4); }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
+    .form-group { display: flex; flex-direction: column; gap: .5rem; }
+    .form-group label { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--silver); }
+    .form-group input,
+    .form-group textarea {
+      background: var(--bg3); border: 1.5px solid var(--border);
+      border-radius: 6px; padding: .85rem 1rem;
+      color: var(--white); font-family: var(--font-body); font-size: .9rem;
+      outline: none; transition: border-color .25s;
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--teal); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    ::placeholder { color: var(--silver); opacity: .6; }
+
+    .btn-submit {
+      background: var(--teal); color: var(--bg);
+      padding: 1rem; border: none; border-radius: 6px;
+      font-family: var(--font-head); font-weight: 700; font-size: .9rem;
+      letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
+      transition: box-shadow .25s, transform .2s;
+    }
+    .btn-submit:hover { box-shadow: 0 0 32px var(--teal-glow); transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 3rem 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo { display: flex; align-items: center; gap: .6rem; }
+    .footer-logo img {
+      height: 42px;
+      filter: drop-shadow(0 0 8px rgba(46,196,182,.35)) brightness(1.2);
+    }
+    .footer-copy { font-size: .78rem; color: var(--silver); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .78rem; color: var(--silver); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--teal); }
+
+    /* ── FLOATING WHATSAPP ── */
+    .float-wa {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 99;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(37,211,102,.4);
+      text-decoration: none;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .float-wa:hover { transform: scale(1.1); box-shadow: 0 6px 36px rgba(37,211,102,.6); }
+    .float-wa svg { width: 28px; height: 28px; fill: white; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .7s, transform .7s;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 5%; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      #hero { padding: 8rem 5% 5rem; }
+      #hero::before { font-size: 14rem; right: -10%; }
+      #por-que { grid-template-columns: 1fr; gap: 3rem; }
+      .why-visual { display: none; }
+      .portfolio-card { grid-template-columns: 1fr; }
+      .portfolio-preview { min-height: 200px; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      section { padding: 5rem 5%; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="DeltaStudio_logo_nobg.png" alt="Delta Studio" />
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#portafolio">Portafolio</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a class="nav-cta" href="https://wa.me/18496508374">WhatsApp</a>
+  <div class="nav-hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Santo Domingo, RD &nbsp;·&nbsp; Desarrollo Web & IA</div>
+    <h1>
+      Tu negocio<br/>
+      <em>en línea</em>,<br/>
+      <span class="outline">en 7 días.</span>
+    </h1>
+    <p class="hero-sub">
+      Diseñamos sitios web profesionales para negocios dominicanos que quieren crecer, generar clientes y destacar frente a la competencia.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://wa.me/18496508374">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.118 1.528 5.845L.057 23.571a.75.75 0 0 0 .921.921l5.726-1.471A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.693 9.693 0 0 1-4.946-1.355l-.355-.21-3.676.944.962-3.558-.23-.368A9.693 9.693 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        Hablar con nosotros
+      </a>
+      <a class="btn-ghost" href="#servicios">Ver servicios ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <span class="stat-num">7</span>
+        <div class="stat-label">días de entrega</div>
+      </div>
+      <div>
+        <span class="stat-num">$50</span>
+        <div class="stat-label">USD / mes hosting</div>
+      </div>
+      <div>
+        <span class="stat-num">100%</span>
+        <div class="stat-label">Hecho en RD</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-head reveal">
+    <div class="section-eyebrow">Servicios</div>
+    <h2>Todo lo que necesita<br/><em>tu negocio</em> en línea.</h2>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-icon">🎨</div>
+      <div class="service-title">Diseño Web Profesional</div>
+      <div class="service-desc">Sitios modernos, rápidos y adaptados a celular. Diseñados para convertir visitantes en clientes reales.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-icon">🔧</div>
+      <div class="service-title">Mantenimiento Mensual</div>
+      <div class="service-desc">Hosting, SSL, soporte técnico y actualizaciones de contenido incluidos. Tu sitio siempre activo.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-icon">🔍</div>
+      <div class="service-title">SEO Básico</div>
+      <div class="service-desc">Optimización para que tu negocio aparezca en Google cuando los clientes te buscan en Santo Domingo.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-icon">🤖</div>
+      <div class="service-title">Inteligencia Artificial</div>
+      <div class="service-desc">Automatización y herramientas de IA aplicadas a tu negocio. Haz más con menos esfuerzo.</div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ -->
+<section id="por-que">
+  <div class="why-text reveal">
+    <div class="section-eyebrow">Por qué Delta Studio</div>
+    <h2>Rápidos, locales<br/>y <em>reales</em>.</h2>
+    <p>No somos una agencia genérica. Somos un equipo de Santo Domingo que entiende el mercado dominicano y construye sitios que generan resultados.</p>
+    <ul class="why-list">
+      <li>
+        <div>
+          <strong>Entrega en 7 días hábiles</strong>
+          Desde la firma del contrato hasta el sitio publicado. Sin excusas, sin demoras.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Precios en pesos dominicanos</strong>
+          Sin complicaciones de cambio. Pagos simples, transparentes, desde RD$2,925/mes.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Soporte por WhatsApp</strong>
+          Acceso directo al equipo. Si algo falla, lo resolvemos rápido.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Tecnología de punta</strong>
+          Usamos las mismas herramientas que las grandes agencias — a precios locales.
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="why-visual reveal">
+    <div class="delta-3d">
+      <div class="delta-ring"></div>
+      <div class="delta-ring"></div>
+      <div class="delta-ring"></div>
+      <div class="delta-center">Δ</div>
+      <div class="why-cards">
+        <div class="why-badge">⚡ 7 días</div>
+        <div class="why-badge">✓ SSL incluido</div>
+        <div class="why-badge">📍 Santo Domingo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTAFOLIO -->
+<section id="portafolio">
+  <div class="section-head reveal">
+    <div class="section-eyebrow">Portafolio</div>
+    <h2>Proyectos que<br/><em>hablan</em> por sí solos.</h2>
+  </div>
+  <div class="portfolio-card reveal">
+    <div class="portfolio-preview">
+      <div class="browser-bar">
+        <div class="browser-dot"></div>
+        <div class="browser-dot"></div>
+        <div class="browser-dot"></div>
+        <div class="browser-url">dentalfamilycenter.com</div>
+      </div>
+      <div class="browser-content">
+        <div class="bc-nav">
+          <div class="bc-nav-dot"></div><div class="bc-nav-dot"></div>
+          <div class="bc-nav-dot"></div><div class="bc-nav-dot"></div>
+        </div>
+        <div class="bc-hero">
+          <div class="bc-hero-text">El arte de una sonrisa excepcional.</div>
+        </div>
+        <div class="bc-cards">
+          <div class="bc-card"></div>
+          <div class="bc-card"></div>
+          <div class="bc-card"></div>
+        </div>
+      </div>
+    </div>
+    <div class="portfolio-info">
+      <div class="portfolio-tag">Clínica Dental · Santo Domingo</div>
+      <div class="portfolio-title">Dental Family Center</div>
+      <p class="portfolio-desc">Sitio web profesional de 5 páginas para clínica dental de alto nivel. Diseño editorial, formulario de contacto, botón de WhatsApp y optimizado para Google.</p>
+      <div class="portfolio-results">
+        <div>
+          <span class="p-result-num">5</span>
+          <span class="p-result-label">Páginas</span>
+        </div>
+        <div>
+          <span class="p-result-num">7d</span>
+          <span class="p-result-label">Entrega</span>
+        </div>
+        <div>
+          <span class="p-result-num">100%</span>
+          <span class="p-result-label">Responsivo</span>
+        </div>
+      </div>
+      <div class="portfolio-tech">
+        <span class="tech-tag">React</span>
+        <span class="tech-tag">TypeScript</span>
+        <span class="tech-tag">SEO</span>
+        <span class="tech-tag">WhatsApp</span>
+        <span class="tech-tag">SSL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-head reveal">
+    <div class="section-eyebrow">Precios</div>
+    <h2>Transparente<br/>desde el <em>día uno</em>.</h2>
+    <p>Sin letra pequeña. Sin sorpresas. El setup se divide 50/50 — la mitad al inicio, la mitad cuando el sitio esté listo.</p>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="pricing-card">
+      <div class="pricing-plan">Plan Estándar</div>
+      <div class="pricing-price">RD$2,925 <span>/ mes</span></div>
+      <div class="pricing-setup">+ RD$5,000 setup único al inicio</div>
+      <ul class="pricing-features">
+        <li>Hasta 5 páginas diseñadas</li>
+        <li>Diseño responsivo (celular + tablet)</li>
+        <li>Dominio personalizado incluido</li>
+        <li>Hosting + SSL incluidos</li>
+        <li>SEO básico para Google</li>
+        <li>Hasta 3 actualizaciones/mes</li>
+        <li>Soporte técnico por WhatsApp</li>
+      </ul>
+      <a class="btn-pricing outline" href="https://wa.me/18496508374">Comenzar ahora</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge">⭐ Mejor valor</div>
+      <div class="pricing-plan">Plan Trimestral</div>
+      <div class="pricing-price">RD$8,775 <span>/ 3 meses</span></div>
+      <div class="pricing-setup">Setup fee eliminado — ahorro de RD$5,680</div>
+      <ul class="pricing-features">
+        <li>Todo lo del Plan Estándar</li>
+        <li>Sin costo de setup</li>
+        <li>Prioridad en soporte</li>
+        <li>Ahorro de RD$5,680</li>
+        <li>Ideal para arrancar rápido</li>
+        <li>Pago único, 3 meses cubiertos</li>
+        <li>Revisiones ilimitadas en primer mes</li>
+      </ul>
+      <a class="btn-pricing primary" href="https://wa.me/18496508374">Elegir este plan</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contact-wrap">
+    <div class="contact-info reveal">
+      <div class="section-eyebrow">Contacto</div>
+      <h2>Hablemos de<br/><em>tu proyecto</em>.</h2>
+      <p>Cuéntanos sobre tu negocio y te respondemos en menos de un día hábil con una propuesta personalizada.</p>
+      <div class="contact-items">
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-item-text">
+            <div class="contact-item-label">Teléfono</div>
+            <div class="contact-item-value">849-650-8374</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-item-text">
+            <div class="contact-item-label">Ubicación</div>
+            <div class="contact-item-value">Santo Domingo, RD</div>
+          </div>
+        </div>
+      </div>
+      <div class="wa-block">
+        <div class="wa-text">
+          <strong>WhatsApp directo</strong>
+          <span>Respondemos rápido, sin formularios.</span>
+        </div>
+        <a class="wa-btn" href="https://wa.me/18496508374">Escribir</a>
+      </div>
+    </div>
+    <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label>Tu nombre</label>
+        <input type="text" placeholder="Nombre completo" required />
+      </div>
+      <div class="form-group">
+        <label>Tu negocio</label>
+        <input type="text" placeholder="Nombre de tu negocio" required />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp o correo</label>
+        <input type="text" placeholder="809-000-0000 o correo@ejemplo.com" required />
+      </div>
+      <div class="form-group">
+        <label>¿Qué necesitas?</label>
+        <textarea placeholder="Cuéntanos sobre tu negocio y lo que buscas..."></textarea>
+      </div>
+      <button class="btn-submit" type="submit">Enviar mensaje →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="DeltaStudio_logo_nobg.png" alt="Delta Studio" />
+  </div>
+  <div class="footer-copy">© 2026 Delta Studio · Santo Domingo, RD</div>
+  <div class="footer-links">
+    <a href="#servicios">Servicios</a>
+    <a href="#precios">Precios</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<a class="float-wa" href="https://wa.me/18496508374" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.118 1.528 5.845L.057 23.571a.75.75 0 0 0 .921.921l5.726-1.471A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.693 9.693 0 0 1-4.946-1.355l-.355-.21-3.676.944.962-3.558-.23-.368A9.693 9.693 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+</a>
+
+<script>
+  // Particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 10 + 5;
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      bottom: -20px;
+      border-left-width: ${size}px;
+      border-right-width: ${size}px;
+      border-bottom-width: ${size * 1.7}px;
+      opacity: ${Math.random() * 0.4 + 0.1};
+      animation-duration: ${Math.random() * 20 + 15}s;
+      animation-delay: ${Math.random() * 15}s;
+    `;
+    container.appendChild(p);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    btn.textContent = '✓ Mensaje enviado';
+    btn.style.background = '#25D366';
+    setTimeout(() => {
+      btn.textContent = 'Enviar mensaje →';
+      btn.style.background = '';
+      e.target.reset();
+    }, 3000);
+  }
+
+  // Mobile menu
+  function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    const cta = document.querySelector('.nav-cta');
+    if (links) {
+      const open = links.style.display === 'flex';
+      links.style.cssText = open ? '' : 'display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(7,14,28,.97);padding:1.5rem 5%;gap:1.25rem;border-bottom:1px solid var(--border)';
+      if (cta) cta.style.display = open ? '' : 'block';
+    }
+  }
+</script>
+</body>
+</html>
