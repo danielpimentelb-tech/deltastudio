@@ -533,10 +533,27 @@
     .portfolio-preview {
       background: #0d0d0d;
       border-right: 1px solid var(--border);
-      padding: 32px;
+      padding: 24px 24px 0;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .portfolio-preview .site-screenshot {
+      flex: 1;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    .portfolio-preview .site-screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
     }
 
     .browser-bar {
@@ -1431,21 +1448,8 @@
           <div class="browser-dot"></div>
           <div class="browser-url">dentalfamilycenter.com</div>
         </div>
-        <div class="browser-content">
-          <div class="bc-nav">
-            <div class="bc-nav-dot"></div>
-            <div class="bc-nav-dot"></div>
-            <div class="bc-nav-dot"></div>
-            <div class="bc-nav-dot"></div>
-          </div>
-          <div class="bc-hero">
-            <div class="bc-hero-text">El arte de una sonrisa excepcional.</div>
-          </div>
-          <div class="bc-cards">
-            <div class="bc-card"></div>
-            <div class="bc-card"></div>
-            <div class="bc-card"></div>
-          </div>
+        <div class="site-screenshot">
+          <img src="dental-preview.png" alt="Dental Family Center website screenshot">
         </div>
       </div>
       <div class="portfolio-info">
